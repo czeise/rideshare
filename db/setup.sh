@@ -51,6 +51,20 @@ psql $DB_URL -a -f db/alter_default_privileges_readonly.sql
 psql $DB_URL -a -f db/alter_default_privileges_public.sql
 
 echo "Add to ~/.pgpass"
+
+# Remove existing lines from ~/.pgpass 
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    sed -i '' "/:rideshare_development:/d" ~/.pgpass
+    sed -i '' "/*:*:*:replication_user:/d" ~/.pgpass
+    sed -i '' "/*:*:*:app_readonly:/d" ~/.pgpass
+else
+    # TODO: This is a guess for linux...untested!
+    sed -i "/:rideshare_development:/d" ~/.pgpass
+    sed -i "/*:*:*:replication_user:/d" ~/.pgpass
+    sed -i "/*:*:*:app_readonly:/d" ~/.pgpass
+fi
+
+# Append new lines to ~/.pgpass
 echo "localhost:5432:rideshare_development:owner:$RIDESHARE_DB_PASSWORD
 localhost:6432:rideshare_development:owner:$RIDESHARE_DB_PASSWORD
 localhost:5432:rideshare_development:app:$RIDESHARE_DB_PASSWORD
@@ -74,5 +88,5 @@ echo "Review 'output.log' for any errors"
 echo
 echo "~/.pgpass received changes."
 
-echo "Set DATABASE URL, which you can find in .env"
-echo "Run: export $(cat .env|grep DATABASE_URL|head -n1)"
+echo "Set DATABASE URL by running:"
+echo "export $(cat .env|grep DATABASE_URL|head -n1)"
