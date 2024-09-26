@@ -1,20 +1,25 @@
 [![CircleCI](https://circleci.com/gh/andyatkinson/rideshare.svg?style=svg)](https://circleci.com/gh/andyatkinson/rideshare)
 
 # 📚 High Performance PostgreSQL for Rails
+
 Rideshare is the Rails application for the book ["High Performance PostgreSQL for Rails"](https://pragprog.com/titles/aapsql/high-performance-postgresql-for-rails), published by Pragmatic Programmers in 2024.
 
 # Installation
+
 Prepare your development machine.
 
 ## Homebrew Packages
+
 First, install [Homebrew](https://brew.sh).
 
 ### Graphviz
+
 ```sh
 brew install graphviz
 ```
 
 ## Ruby Version Manager
+
 Before installing Ruby, install a *Ruby version manager*. The recommended one is [Rbenv](https://github.com/rbenv/rbenv). Run:
 
 ```sh
@@ -22,13 +27,15 @@ brew install rbenv
 ```
 
 ## PostgreSQL
+
 PostgreSQL 16 or greater is required. Installation may be via Homebrew, although the recommended method is [Postgres.app](https://postgresapp.com)
 
 ### PostgresApp
+
 - Once installed, from the Menu Bar app, choose "Open Postgres" then click the "+" icon to create a new PostgreSQL 16 server
 
-
 ## Ruby
+
 Run `cat .ruby-version` from the Rideshare directory to find the needed version of Ruby.
 
 For example, if `3.2.2` is listed, run:
@@ -47,6 +54,7 @@ Run `rbenv versions` to confirm the correct version is active. The current versi
 Running into rbenv trouble? Review *Learn how to load rbenv in your shell* using [`rbenv init`](https://github.com/rbenv/rbenv).
 
 ## Bundler and Gems
+
 Bundler is included when you install Ruby using Rbenv. You're ready to install the Ruby gems for Rideshare.
 
 Run the following command from the Rideshare directory:
@@ -56,18 +64,22 @@ bundle install
 ```
 
 ## Rideshare development database
+
 Normally in Ruby on Rails applications, you'd run `bin/rails db:create` to create the dev and test databases. Rideshare uses a custom script.
 
 The script is [`db/setup.sh`](db/setup.sh). Don't run it yet.
 
-Before you run it, make sure the following environment variables are set:
+Before you run it, make sure the following environment variable is set:
 
 - `RIDESHARE_DB_PASSWORD`
-- `DB_URL`
 
-You can do that by running `echo $RIDESHARE_DB_PASSWORD` (and for `DB_URL`) and making sure they have a value.
+To do so, run `echo $RIDESHARE_DB_PASSWORD` to check if you've already set a value.
 
-Review the [`db/setup.sh`](db/setup.sh) script header section for details on what the values for those environment variables should be.
+If it's empty, generate a password and set it as the value for `RIDESHARE_DB_PASSWORD`.
+
+```sh
+export RIDESHARE_DB_PASSWORD=$(openssl rand -hex 12)
+```
 
 Once both are set, run the script using the command below. This method writes script output into the `output.log` file.
 
@@ -75,19 +87,9 @@ Once both are set, run the script using the command below. This method writes sc
 sh db/setup.sh 2>&1 | tee -a output.log
 ```
 
-Since you set `RIDESHARE_DB_PASSWORD` earlier, create or update `~/.pgpass` with the password.
+Finally, as suggested by the notes output at the end of the setup script, run `export DATABASE_URL=<value from .env>` to set the value of the `DATABASE_URL`. The value is in `.env`, and is also output at the end of the setup script.
 
-Refer to `postgresql/.pgpass.sample` for an example row, then copy the example into your own `~/.pgpass` file.
-
-When you've updated `~/.pgpass`, it should have an entry like below. Replace the last segment (`2C6uw3LprgUMwSLQ` below) with the password you generated.
-
-```sh
-localhost:5432:rideshare_development:owner:2C6uw3LprgUMwSLQ
-```
-
-Run `chmod 0600 ~/.pgpass` to change the file mode (permissions).
-
-Finally, run `export DATABASE_URL=<value from .env>`, getting the value from the `.env` file in this project, set as the value of the `DATABASE_URL` environment variable.
+TODO: Is the intention that this is used just during setup, or should instructions for adding this to `~/.zshrc` or `~/.bashrc` be included?
 
 Confirm that's a non-empty value by running `echo $DATABASE_URL`.
 
@@ -135,8 +137,8 @@ Run the *describe table* meta command next: `\dt`. Rideshare tables like `users`
 If no tables are listed, make sure you've run migrations, see below!
 </details>
 
-
 ## Run Migrations
+
 Run migrations the standard way:
 
 ```sh
